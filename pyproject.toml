@@ -1,0 +1,41 @@
+[tool.poetry]
+name = "llm-sft"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+package-mode = false
+
+[[tool.poetry.source]]
+name = "torch_cu118"
+url = "https://download.pytorch.org/whl/cu118"
+priority = "explicit"
+
+
+[tool.poetry.dependencies]
+python = "^3.10"
+tokenizers = "0.15.2"
+accelerate = "0.29.2"
+torch = [
+    {version = "2.1.2", platform = "darwin", source = "PyPI"},
+    {version = "2.1.2+cu118", platform = "linux", source = "torch_cu118"}
+]
+sentencepiece = "0.1.99"
+datasets = "2.18.0"
+transformers = "4.39.3"
+trl = "^0.8.6"
+peft = "^0.10.0"
+omegaconf = "^2.3.0"
+bitsandbytes = "0.43.1"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.4.4"
+ipykernel = "^6.29.4"
+ipywidgets = "^8.1.2"
+pytest = "^8.2.0"
+pre-commit = "^3.7.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
