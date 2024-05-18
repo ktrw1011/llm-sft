@@ -59,6 +59,15 @@ def load_dataset(data_files: list[str]) -> datasets.Dataset:
 
 
 @dataclass
+class WandbConfig:
+    entity: str
+    project: str
+    group: str
+    name: str
+    tags: list[str] | None
+
+
+@dataclass
 class SFTTrainingArguments:
     model_name_or_path: str
     tokenizer_name_or_path: str | None
@@ -93,14 +102,16 @@ class SFTTrainingArguments:
             kwargs = {"torch_dtype": torch.float16}
         if self.use_flash_attention_2:
             kwargs["attn_implementation"] = self.use_flash_attention_2
-        
-        kwargs["device_map"] = 'cuda'
+
+        kwargs["device_map"] = "cuda"
         return kwargs
 
 
 def load_config(
     config_path: str,
-) -> tuple[TrainingArguments, SFTTrainingArguments, LoraConfig | None]:
+) -> tuple[
+    TrainingArguments, SFTTrainingArguments, LoraConfig | None, WandbConfig | None
+]:
     config = yaml.safe_load(Path(config_path).open())
 
     training_args = TrainingArguments(**config["training_args"])
@@ -117,12 +128,20 @@ def load_config(
             **config["lora"],
         )
 
-    return training_args, sft_args, lora_config
+    wandb_config: WandbConfig | None = None
+
+    if config["wandb"] is None:
+        training_args.report_to = "none"
+    else:
+        training_args.report_to = "wandb"
+        wandb_config = WandbConfig(**config["wandb"])
+
+    return training_args, sft_args, lora_config, wandb_config
 
 
 def main(config_path: str) -> None:
     logger.info("Loading config")
-    training_args, sft_args, lora_config = load_config(config_path)
+    training_args, sft_args, lora_config, wandb_config = load_config(config_path)
 
     # setup tokenizer
     tokenizer_name_or_path = (
@@ -161,6 +180,13 @@ def main(config_path: str) -> None:
         trust_remote_code=True,
         **kwargs,
     )
+
+    if wandb_config is not None:
+        import wandb
+
+        with training_args.main_process_first():
+            logger.info("Setting up wandb")
+            wandb.init(**wandb_config)
 
     trainer = SFTTrainer(
         args=training_args,

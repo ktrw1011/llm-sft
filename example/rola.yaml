@@ -53,4 +53,9 @@ training_args:
   save_strategy: steps
   save_total_limit: 1
 
-  report_to: 'none'
+wandb:
+  entity: weblab-geniac4
+  project: sft
+  name: rola_test
+  tag:
+    - test
