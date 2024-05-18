@@ -101,7 +101,7 @@ class SFTTrainingArguments:
         else:
             kwargs = {"torch_dtype": torch.float16}
         if self.use_flash_attention_2:
-            kwargs["attn_implementation"] = self.use_flash_attention_2
+            kwargs["attn_implementation"] = "flash_attention_2"
 
         kwargs["device_map"] = "cuda"
         return kwargs
@@ -114,27 +114,25 @@ def load_config(
 ]:
     config = yaml.safe_load(Path(config_path).open())
 
-    training_args = TrainingArguments(**config["training_args"])
+    wandb_config: WandbConfig | None = None
+    if config["wandb"] is None:
+        report_to = "none"
+    else:
+        report_to = "wandb"
+        wandb_config = WandbConfig(**config["wandb"])
+
+    training_args = TrainingArguments(**config["training_args"], report_to=report_to)
     sft_args = SFTTrainingArguments(**config["sft_args"])
 
     lora_config: LoraConfig | None = None
     if config["lora"] is not None:
         target_modules = get_target_module(config["lora"].pop("target_modules"))
         lora_config = LoraConfig(
-            fan_in_fan_out=True,
             bias="none",
             task_type="CAUSAL_LM",
             target_modules=target_modules,
             **config["lora"],
         )
-
-    wandb_config: WandbConfig | None = None
-
-    if config["wandb"] is None:
-        training_args.report_to = "none"
-    else:
-        training_args.report_to = "wandb"
-        wandb_config = WandbConfig(**config["wandb"])
 
     return training_args, sft_args, lora_config, wandb_config
 

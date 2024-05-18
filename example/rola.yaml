@@ -11,6 +11,8 @@ sft_args:
     - /storage4/datasets/sft/prepare-post-train-datasets/jsonl/train/databricks-dolly-15k-ja.jsonl
     - /storage4/datasets/sft/prepare-post-train-datasets/jsonl/train/oasst1-21k-ja.jsonl
     - /storage4/datasets/sft/prepare-post-train-datasets/jsonl/train/oasst2-33k-ja.jsonl
+  eval_data_files: null
+
 lora:
   target_modules: deepseek
   r: 8
@@ -58,4 +60,4 @@ wandb:
   project: sft
   name: rola_test
   tag:
-    - test
+   - test
