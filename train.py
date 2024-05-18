@@ -91,7 +91,10 @@ class SFTTrainingArguments:
             kwargs = {"torch_dtype": torch.bfloat16}
         else:
             kwargs = {"torch_dtype": torch.float16}
-        kwargs["use_flash_attention_2"] = self.use_flash_attention_2
+        if self.use_flash_attention_2:
+            kwargs["attn_implementation"] = self.use_flash_attention_2
+        
+        kwargs["device_map"] = 'cuda'
         return kwargs
 
 

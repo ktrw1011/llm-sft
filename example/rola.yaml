@@ -1,0 +1,56 @@
+sft_args:
+  model_name_or_path: /storage4/work/yamaguchi/model/JINIAC-5B-base-ja_en
+  tokenizer_name_or_path: JINIAC/JINIAC-5B-base-ja_en
+  use_fast: True
+  additional_special_tokens: null
+  load_in_8bit: False
+  load_in_4bit: False
+  use_flash_attention_2: True
+  max_seq_length: 2048
+  data_files:
+    - /storage4/datasets/sft/prepare-post-train-datasets/jsonl/train/databricks-dolly-15k-ja.jsonl
+    - /storage4/datasets/sft/prepare-post-train-datasets/jsonl/train/oasst1-21k-ja.jsonl
+    - /storage4/datasets/sft/prepare-post-train-datasets/jsonl/train/oasst2-33k-ja.jsonl
+lora:
+  target_modules: deepseek
+  r: 8
+  lora_alpha: 32
+  lora_dropout: 0.1
+
+training_args:
+  output_dir: /storage4/work/ktr/rola_4bit
+  overwrite_output_dir: False
+  seed: 42
+
+  bf16: True
+
+  do_train: True
+  do_eval: True
+  do_predict: False
+
+  per_device_eval_batch_size: 8
+  per_device_train_batch_size: 8
+
+  optim: adamw_torch
+  lr_scheduler_type: linear
+
+  num_train_epochs: 1
+  learning_rate: 1.0e-4
+  warmup_ratio: 0.0
+  warmup_steps: 0
+  weight_decay: 0.0
+
+  gradient_accumulation_steps: 1
+  gradient_checkpointing: True
+  gradient_checkpointing_kwargs:
+    use_reentrant: False
+
+
+  logging_steps: 100
+  logging_strategy: steps
+
+  save_steps: 500
+  save_strategy: steps
+  save_total_limit: 1
+
+  report_to: 'none'

@@ -6,19 +6,14 @@ authors = ["Your Name <you@example.com>"]
 readme = "README.md"
 package-mode = false
 
-[[tool.poetry.source]]
-name = "torch_cu118"
-url = "https://download.pytorch.org/whl/cu118"
-priority = "explicit"
-
 
 [tool.poetry.dependencies]
 python = "^3.10"
 tokenizers = "0.15.2"
 accelerate = "0.29.2"
 torch = [
-    {version = "2.1.2", platform = "darwin", source = "PyPI"},
-    {version = "2.1.2+cu118", platform = "linux", source = "torch_cu118"}
+    {version = "2.3.0", platform = "darwin", source = "PyPI"},
+    {version = "2.3.0", platform = "linux", source = "PyPI"}
 ]
 sentencepiece = "0.1.99"
 datasets = "2.18.0"
@@ -27,6 +22,9 @@ trl = "^0.8.6"
 peft = "^0.10.0"
 omegaconf = "^2.3.0"
 bitsandbytes = "0.43.1"
+protobuf = "4.25.1"
+wheel = "^0.43.0"
+packaging = "^24.0"
 
 
 [tool.poetry.group.dev.dependencies]
