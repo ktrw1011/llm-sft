@@ -184,7 +184,13 @@ def main(config_path: str) -> None:
 
         with training_args.main_process_first():
             logger.info("Setting up wandb")
-            wandb.init(**wandb_config)
+            wandb.init(
+                entity=wandb_config.entity,
+                project=wandb_config.project,
+                group=wandb_config.group,
+                name=wandb_config.name,
+                tags=wandb_config.tags,
+            )
 
     trainer = SFTTrainer(
         args=training_args,
